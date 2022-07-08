@@ -1,0 +1,19 @@
+/* Global rules */
+
+:root {
+    --primary: #0D9488;
+    --primary-opac: rgba(13, 148, 136, .5);
+}
+
+::selection {
+    background-color: var(--primary-opac);
+    text-shadow: none;
+}
+
+html {
+    font-family: "Roboto", sans-serif;
+}
+
+body {
+    background-color: #262626;
+}
