@@ -9,7 +9,14 @@ module.exports = {
     screens: {
       'lg': '992px'
     },
-    extend: {}
+    extend: {
+      colors: {
+        opacDark: "rgba(0, 0, 0, 0.75)"
+      },
+      width: {
+        "modal": "35rem"
+      }
+    }
   },
   plugins: [],
 }

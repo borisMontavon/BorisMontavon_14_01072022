@@ -1,11 +1,73 @@
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { useAppDispatch, useAppSelector } from "../app/hooks";
+
 import { CustomInput } from "../components/customInput";
 import { dataFetchHelper } from "../helpers/dataFetchHelper";
+
 import ReactSelect from "react-select";
+
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { CustomModal } from "../components/customModal";
+import {
+    selectSerializedBirthDate,
+    selectCity,
+    selectDepartment,
+    selectFirstName,
+    selectIsFormValid,
+    selectLastName,
+    selectSerializedStartDate,
+    selectState,
+    selectStreet,
+    selectZipCode,
+    setSerializedBirthDate,
+    setCity,
+    setDepartment,
+    setFirstName,
+    setIsFormValid,
+    setLastName,
+    setSerializedStartDate,
+    setState,
+    setStreet,
+    setZipCode
+} from "../features/newEmployee/newEmployeeSlice";
 
 export function HomePage() {
     const [options, setOptions] = useState({"states": [], "departments": []});
+    const [isModalDisplayed, setIsModalDisplayed] = useState(false);
+    const [modalData, setModalData] = useState({
+        "firstName": "",
+        "lastName": "",
+        "birthDate": "",
+        "startDate": "",
+        "street": "",
+        "zipCode": "",
+        "city": "",
+        "state": {
+            "label": "",
+            "value": ""
+        },
+        "department": {
+            "label": "",
+            "value": ""
+        }
+    });
+    const [birthDate, setBirthDate] = useState(new Date());
+    const [startDate, setStartDate] = useState(new Date());
+
+    const firstName = useAppSelector(selectFirstName);
+    const lastName = useAppSelector(selectLastName);
+    const serializedBirthDate = useAppSelector(selectSerializedBirthDate);
+    const serializedStartDate = useAppSelector(selectSerializedStartDate);
+    const street = useAppSelector(selectStreet);
+    const zipCode = useAppSelector(selectZipCode);
+    const city = useAppSelector(selectCity);
+    const state = useAppSelector(selectState);
+    const department = useAppSelector(selectDepartment);
+    const isFormValid = useAppSelector(selectIsFormValid);
+
+    const dispatch = useAppDispatch();
 
     useEffect(() => {
         async function fetchOptions() {
@@ -55,7 +117,46 @@ export function HomePage() {
             padding: "0.5rem 0.5rem 0.5rem 0",
             margin: "0"
         }),
-      }
+    }
+
+    function onNewBirthDate(date: Date) {
+        setBirthDate(date);
+        dispatch(setSerializedBirthDate(date.toLocaleDateString("en-US")));
+    }
+
+    function onNewStartDate(date: Date) {
+        setStartDate(date);
+        dispatch(setSerializedStartDate(date.toLocaleDateString("en-US")));
+    }
+
+    function onFormValidate() {
+        dispatch(setIsFormValid());
+        setModalData(getNewEmployeeData());
+        console.log(modalData);
+
+        if (isFormValid) {
+            setIsModalDisplayed(true);
+            // document.getElementById("create-employee")?.reset();
+        }
+    }
+
+    function closeModal() {
+        setIsModalDisplayed(false);
+    }
+
+    function getNewEmployeeData() {
+        return {
+            "firstName": firstName,
+            "lastName": lastName,
+            "birthDate": serializedBirthDate,
+            "startDate": serializedStartDate,
+            "street": street,
+            "zipCode": zipCode,
+            "city": city,
+            "state": state,
+            "department": department
+        };
+    }
 
     return (
         <div className="w-100 flex flex-col items-center">
@@ -64,27 +165,133 @@ export function HomePage() {
             <div className="bg-neutral-900 rounded-lg mb-8 p-8 flex flex-col w-11/12 md:w-7/12 lg:w-5/12">
                 <h2 className="text-white text-xl self-center mb-8 font-medium">Create Employee</h2>
                 <form action="#" id="create-employee">
-                    <CustomInput inputId="first-name" labelTitle="First Name" type="text" onChangeInput={(e) => console.log(e.target.value)}/>
-                    <CustomInput inputId="last-name" labelTitle="Last Name" type="text" onChangeInput={(e) => console.log(e.target.value)}/>
-                    <CustomInput inputId="date-of-birth" labelTitle="Date of Birth" type="text" onChangeInput={(e) => console.log(e.target.value)}/>
-                    <CustomInput inputId="start-date" labelTitle="Start Date" type="text" onChangeInput={(e) => console.log(e.target.value)}/>
-                    <CustomInput inputId="street" labelTitle="Street" type="text" onChangeInput={(e) => console.log(e.target.value)}/>
-                    <CustomInput inputId="zip-code" labelTitle="Zip Code" type="number" onChangeInput={(e) => console.log(e.target.value)}/>
-                    <CustomInput inputId="city" labelTitle="City" type="text" onChangeInput={(e) => console.log(e.target.value)}/>
+                    <CustomInput
+                        inputId="first-name"
+                        inputPattern="^[a-zA-Z]+$"
+                        min=""
+                        labelTitle="First Name"
+                        type="text"
+                        errorSpanId="firstNameSpan"
+                        errorSpanMessage="The first name is invalid (at least 2 characters long)."
+                        onChangeInput={(e) => dispatch(setFirstName(e.target.value))}
+                    />
+                    <CustomInput
+                        inputId="last-name"
+                        inputPattern="^[a-zA-Z]+$"
+                        min=""
+                        labelTitle="Last Name"
+                        type="text"
+                        errorSpanId="lastNameSpan"
+                        errorSpanMessage="The last name is invalid (at least 2 characters long)."
+                        onChangeInput={(e) => dispatch(setLastName(e.target.value))}
+                    />
+                    <div>
+                        <label htmlFor="date-of-birth" className="text-white block mt-4 mb-2">Date of Birth</label>
+                        <DatePicker
+                            id="date-of-birth"
+                            selected={birthDate}
+                            onChange={(date: Date) => onNewBirthDate(date)}
+                            dateFormat="MM/dd/yyyy"
+                            showPopperArrow={false}
+                            className="w-full p-2 rounded outline-none outline-offset-1 focus-visible:outline-teal-700"
+                        />
+                        <span
+                            id="birthDateSpan"
+                            className="hidden text-red-600 mt-1"
+                        >
+                            The birth date is invalid.
+                        </span>
+                    </div>
+                    <div>
+                        <label htmlFor="start-date" className="text-white block mt-4 mb-2">Start Date</label>
+                        <DatePicker
+                            id="start-date"
+                            selected={startDate}
+                            onChange={(date: Date) => onNewStartDate(date)}
+                            dateFormat="MM/dd/yyyy"
+                            showPopperArrow={false}
+                            className="w-full p-2 rounded outline-none outline-offset-1 focus-visible:outline-teal-700"
+                        />
+                        <span
+                            id="startDateSpan"
+                            className="hidden text-red-600 mt-1"
+                        >
+                            The start date is invalid.
+                        </span>
+                    </div>
+                    <CustomInput
+                        inputId="street"
+                        inputPattern="^[a-zA-Z]+$"
+                        min=""
+                        labelTitle="Street"
+                        type="text"
+                        errorSpanId="streetSpan"
+                        errorSpanMessage="The street is invalid (at least 2 characters long)."
+                        onChangeInput={(e) => dispatch(setStreet(e.target.value))}
+                    />
+                    <CustomInput
+                        inputId="zip-code"
+                        inputPattern="[0-9]+"
+                        min="1"
+                        labelTitle="Zip Code"
+                        type="text"
+                        errorSpanId="zipCodeSpan"
+                        errorSpanMessage="The zip code is invalid (at least 1 character long)."
+                        onChangeInput={(e) => dispatch(setZipCode(e.target.value))}
+                    />
+                    <CustomInput
+                        inputId="city"
+                        inputPattern="^[a-zA-Z]+$"
+                        min=""
+                        labelTitle="City"
+                        type="text"
+                        errorSpanId="citySpan"
+                        errorSpanMessage="The city's name is invalid (at least 2 characters long)."
+                        onChangeInput={(e) => dispatch(setCity(e.target.value))}
+                    />
 
                     <div>
                         <label htmlFor="state" className="text-white block mt-4 mb-2">State</label>
-                        <ReactSelect styles={customStyles} id="state" options={options.states} menuPlacement="auto" />
+                        <ReactSelect
+                            styles={customStyles}
+                            id="state"
+                            options={options.states}
+                            menuPlacement="auto"
+                            onChange={(inputValue) => dispatch(setState(inputValue || {}))}
+                        />
+                        <span
+                            id="stateSpan"
+                            className="hidden text-red-600 mt-1"
+                        >
+                            Please fill in this field.
+                        </span>
                     </div>
                     <div>
                         <label htmlFor="department" className="text-white block mt-4 mb-2">Department</label>
-                        <ReactSelect styles={customStyles} id="department" options={options.departments} menuPlacement="auto" />
+                        <ReactSelect
+                            styles={customStyles}
+                            id="department"
+                            options={options.departments}
+                            menuPlacement="auto"
+                            onChange={(inputValue) => dispatch(setDepartment(inputValue || {}))}
+                        />
+                        <span
+                            id="departmentSpan"
+                            className="hidden text-red-600 mt-1"
+                        >
+                            Please fill in this field.
+                        </span>
                     </div>
                 </form>
 
-                <button className="bg-transparent self-center py-2 px-4 rounded-md text-teal-700 border border-teal-700 transition-all mt-8 hover:bg-teal-700 hover:text-white">Save</button>
+                <button
+                    className="bg-transparent self-center py-2 px-4 rounded-md text-teal-700 border border-teal-700 transition-all mt-8 hover:bg-teal-700 hover:text-white"
+                    onClick={() => onFormValidate()}
+                >
+                    Save
+                </button>
             </div>
-            {/* <div id="confirmation" className="modal">Employee Created!</div> */}
+            <CustomModal show={isModalDisplayed} title={"Employee created !"} employeeData={modalData} onClose={() => closeModal()} />
         </div>
     );
 }
