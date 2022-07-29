@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 
 import { CustomInput } from "../components/customInput";
-import { dataFetchHelper } from "../helpers/dataFetchHelper";
+import { optionsFetchHelper } from "../helpers/dataFetchHelper";
 import { isFormValidCheck } from "../helpers/newEmployeeFormValidation";
 
 import ReactSelect from "react-select";
@@ -55,7 +55,7 @@ export function HomePage() {
 
     useEffect(() => {
         async function fetchOptions() {
-            const optionsData = await dataFetchHelper();
+            const optionsData = await optionsFetchHelper();
 
             setOptions(optionsData);
         }

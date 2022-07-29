@@ -409,9 +409,6 @@ video {
 .left-0{
   left: 0px;
 }
-.m-auto{
-  margin: auto;
-}
 .mt-4{
   margin-top: 1rem;
 }
@@ -472,9 +469,6 @@ video {
 .self-center{
   align-self: center;
 }
-.justify-self-center{
-  justify-self: center;
-}
 .rounded{
   border-radius: 0.25rem;
 }
@@ -528,9 +522,6 @@ video {
 .px-4{
   padding-left: 1rem;
   padding-right: 1rem;
-}
-.text-center{
-  text-align: center;
 }
 .text-right{
   text-align: right;
