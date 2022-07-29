@@ -4,6 +4,7 @@ import { useAppDispatch, useAppSelector } from "../app/hooks";
 
 import { CustomInput } from "../components/customInput";
 import { dataFetchHelper } from "../helpers/dataFetchHelper";
+import { isFormValidCheck } from "../helpers/newEmployeeFormValidation";
 
 import ReactSelect from "react-select";
 
@@ -15,8 +16,8 @@ import {
     selectCity,
     selectDepartment,
     selectFirstName,
-    selectIsFormValid,
     selectLastName,
+    selectModalData,
     selectSerializedStartDate,
     selectState,
     selectStreet,
@@ -25,8 +26,8 @@ import {
     setCity,
     setDepartment,
     setFirstName,
-    setIsFormValid,
     setLastName,
+    setModalData,
     setSerializedStartDate,
     setState,
     setStreet,
@@ -36,23 +37,6 @@ import {
 export function HomePage() {
     const [options, setOptions] = useState({"states": [], "departments": []});
     const [isModalDisplayed, setIsModalDisplayed] = useState(false);
-    const [modalData, setModalData] = useState({
-        "firstName": "",
-        "lastName": "",
-        "birthDate": "",
-        "startDate": "",
-        "street": "",
-        "zipCode": "",
-        "city": "",
-        "state": {
-            "label": "",
-            "value": ""
-        },
-        "department": {
-            "label": "",
-            "value": ""
-        }
-    });
     const [birthDate, setBirthDate] = useState(new Date());
     const [startDate, setStartDate] = useState(new Date());
 
@@ -65,7 +49,7 @@ export function HomePage() {
     const city = useAppSelector(selectCity);
     const state = useAppSelector(selectState);
     const department = useAppSelector(selectDepartment);
-    const isFormValid = useAppSelector(selectIsFormValid);
+    const modalData = useAppSelector(selectModalData);
 
     const dispatch = useAppDispatch();
 
@@ -129,14 +113,17 @@ export function HomePage() {
         dispatch(setSerializedStartDate(date.toLocaleDateString("en-US")));
     }
 
-    function onFormValidate() {
-        dispatch(setIsFormValid());
-        setModalData(getNewEmployeeData());
-        console.log(modalData);
+    function onFormValidate(e: React.SyntheticEvent): void {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const newData = getNewEmployeeData();
+        const isFormValid: boolean = isFormValidCheck(newData);
+
+        dispatch(setModalData({...modalData, ...newData}));
 
         if (isFormValid) {
             setIsModalDisplayed(true);
-            // document.getElementById("create-employee")?.reset();
         }
     }
 
@@ -148,13 +135,19 @@ export function HomePage() {
         return {
             "firstName": firstName,
             "lastName": lastName,
-            "birthDate": serializedBirthDate,
-            "startDate": serializedStartDate,
+            "serializedBirthDate": serializedBirthDate,
+            "serializedStartDate": serializedStartDate,
             "street": street,
             "zipCode": zipCode,
             "city": city,
-            "state": state,
-            "department": department
+            "state": {
+                "label": state.label,
+                "value": state.value
+            },
+            "department": {
+                "label": department.label,
+                "value": department.value
+            }
         };
     }
 
@@ -164,7 +157,7 @@ export function HomePage() {
             <Link to="/employees" className="bg-transparent py-2 px-4 rounded-md text-teal-700 border border-teal-700 transition-all mb-8 hover:bg-teal-700 hover:text-white">View Current Employees</Link>
             <div className="bg-neutral-900 rounded-lg mb-8 p-8 flex flex-col w-11/12 md:w-7/12 lg:w-5/12">
                 <h2 className="text-white text-xl self-center mb-8 font-medium">Create Employee</h2>
-                <form action="#" id="create-employee">
+                <form onSubmit={onFormValidate} id="create-employee">
                     <CustomInput
                         inputId="first-name"
                         inputPattern="^[a-zA-Z]+$"
@@ -282,16 +275,15 @@ export function HomePage() {
                             Please fill in this field.
                         </span>
                     </div>
+                    <button
+                        className="bg-transparent self-center py-2 px-4 rounded-md text-teal-700 border border-teal-700 transition-all mt-8 hover:bg-teal-700 hover:text-white"
+                        type="submit"
+                    >
+                        Save
+                    </button>
                 </form>
-
-                <button
-                    className="bg-transparent self-center py-2 px-4 rounded-md text-teal-700 border border-teal-700 transition-all mt-8 hover:bg-teal-700 hover:text-white"
-                    onClick={() => onFormValidate()}
-                >
-                    Save
-                </button>
             </div>
-            <CustomModal show={isModalDisplayed} title={"Employee created !"} employeeData={modalData} onClose={() => closeModal()} />
+            <CustomModal show={isModalDisplayed} title={"Employee created !"} employeeData={modalData.data} onClose={() => closeModal()} />
         </div>
     );
 }

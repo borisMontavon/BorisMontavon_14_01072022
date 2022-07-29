@@ -6,8 +6,8 @@ interface CustomModalProps {
     employeeData: {
         "firstName": string,
         "lastName": string,
-        "birthDate": string,
-        "startDate": string,
+        "serializedBirthDate": string,
+        "serializedStartDate": string,
         "street": string,
         "zipCode": string,
         "city": string,
@@ -37,8 +37,8 @@ export function CustomModal({show, title, employeeData, onClose}:CustomModalProp
                 <div className="text-white p-5 border-b border-neutral-600">
                     <p className="mb-1">First Name : <span className="text-teal-700">{employeeData.firstName}</span></p>
                     <p className="mb-1">Last Name : <span className="text-teal-700">{employeeData.lastName}</span></p>
-                    <p className="mb-1">Birth Date : <span className="text-teal-700">{employeeData.birthDate}</span></p>
-                    <p className="mb-1">Start Date : <span className="text-teal-700">{employeeData.startDate}</span></p>
+                    <p className="mb-1">Birth Date : <span className="text-teal-700">{employeeData.serializedBirthDate}</span></p>
+                    <p className="mb-1">Start Date : <span className="text-teal-700">{employeeData.serializedStartDate}</span></p>
                     <p className="mb-1">Street : <span className="text-teal-700">{employeeData.street}</span></p>
                     <p className="mb-1">Zip Code : <span className="text-teal-700">{employeeData.zipCode}</span></p>
                     <p className="mb-1">City : <span className="text-teal-700">{employeeData.city}</span></p>
