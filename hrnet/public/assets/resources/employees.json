@@ -1,0 +1,89 @@
+{
+    "employees": [
+        {
+            "firstName": "Jack",
+            "lastName": "Sparrow",
+            "serializedBirthDate": "7/14/2021",
+            "serializedStartDate": "12/29/2022",
+            "street": "22 Black Pearl Street",
+            "zipCode": "5",
+            "city": "Tortuga",
+            "state": {
+                "label": "Alaska",
+                "value": "AK"
+            },
+            "department": {
+                "label": "Legal",
+                "value": "LD"
+            }
+        },
+        {
+            "firstName": "William",
+            "lastName": "Turner",
+            "serializedBirthDate": "7/14/2020",
+            "serializedStartDate": "12/29/2022",
+            "street": "15 Brown Forge Avenue",
+            "zipCode": "4",
+            "city": "Port Royal",
+            "state": {
+                "label": "Oregon",
+                "value": "OR"
+            },
+            "department": {
+                "label": "Engineering",
+                "value": "RD"
+            }
+        },
+        {
+            "firstName": "Elizabeth",
+            "lastName": "Swann",
+            "serializedBirthDate": "7/14/2019",
+            "serializedStartDate": "12/29/2022",
+            "street": "86 Breathing corner",
+            "zipCode": "3",
+            "city": "Port Royal",
+            "state": {
+                "label": "Wyoming",
+                "value": "WY"
+            },
+            "department": {
+                "label": "Human Resources",
+                "value": "HR"
+            }
+        },
+        {
+            "firstName": "Hector",
+            "lastName": "Barbossa",
+            "serializedBirthDate": "7/14/2018",
+            "serializedStartDate": "12/29/2022",
+            "street": "1 Isle de la Muerta",
+            "zipCode": "2",
+            "city": "Isle de la Muerta",
+            "state": {
+                "label": "Washington",
+                "value": "WA"
+            },
+            "department": {
+                "label": "Sales",
+                "value": "SD"
+            }
+        },
+        {
+            "firstName": "Davy",
+            "lastName": "Jones",
+            "serializedBirthDate": "7/14/2017",
+            "serializedStartDate": "12/29/2022",
+            "street": "Flying Dutchman",
+            "zipCode": "1",
+            "city": "Ocean",
+            "state": {
+                "label": "Palau",
+                "value": "PW"
+            },
+            "department": {
+                "label": "Human Resources",
+                "value": "HR"
+            }
+        }
+    ]
+}
