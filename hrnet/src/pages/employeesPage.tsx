@@ -1,15 +1,35 @@
+// import { ReactDataTable } from "@borisMontavon/react-data-table";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { employeesDataFetchHelper } from "../helpers/dataFetchHelper";
+import { ReactDataTable } from "../components/test";
+
+interface TableData {
+    data: Array<any>;
+    columns: Array<any>;
+}
 
 export function EmployeesPage() {
-    const [employees, setEmployees] = useState({"employees": []});
+    const [employees, setEmployees] = useState<TableData>({"data": [], "columns": []});
 
     useEffect(() => {
         async function fetchOptions() {
             const optionsData = await employeesDataFetchHelper();
 
-            setEmployees(optionsData);
+            setEmployees({
+                "data": optionsData.employees,
+                "columns": [
+                    { title: 'First Name', key: 'firstName' },
+                    { title: 'Last Name', key: 'lastName' },
+                    { title: 'Start Date', key: 'serializedStartDate' },
+                    { title: 'Department', key: 'department' },
+                    { title: 'Date of Birth', key: 'serializedBirthDate' },
+                    { title: 'Street', key: 'street' },
+                    { title: 'City', key: 'city' },
+                    { title: 'State', key: 'state' },
+                    { title: 'Zip Code', key: 'zipCode' }
+                ]
+            });
         }
 
         fetchOptions();
@@ -19,15 +39,15 @@ export function EmployeesPage() {
     //     $('#employee-table').DataTable({
     //         data: employees,
     //         columns: [
-    //             { title: 'First Name', data: 'firstName' },
-    //             { title: 'Last Name', data: 'lastName' },
-    //             { title: 'Start Date', data: 'serializedStartDate' },
-    //             { title: 'Department', data: 'department' },
-    //             { title: 'Date of Birth', data: 'serializedBirthDate' },
-    //             { title: 'Street', data: 'street' },
-    //             { title: 'City', data: 'city' },
-    //             { title: 'State', data: 'state' },
-    //             { title: 'Zip Code', data: 'zipCode' },
+    //             { title: 'First Name', key: 'firstName', sort: 'none' },
+    //             { title: 'Last Name', key: 'lastName', asc: 'asc },
+    //             { title: 'Start Date', key: 'serializedStartDate, asc: 'desc' },
+    //             { title: 'Department', key: 'department' },
+    //             { title: 'Date of Birth', key: 'serializedBirthDate' },
+    //             { title: 'Street', key: 'street' },
+    //             { title: 'City', key: 'city' },
+    //             { title: 'State', key: 'state' },
+    //             { title: 'Zip Code', key: 'zipCode' },
     //         ]
     //     });
     // };
@@ -42,9 +62,10 @@ export function EmployeesPage() {
                 >
                     Home
                 </Link>
-                <div className="bg-neutral-900 rounded-lg mb-8 p-8 flex flex-col w-11/12 md:w-7/12 lg:w-5/12">
+                <div className="bg-neutral-900 rounded-lg mb-8 p-8 flex flex-col w-11/12 md:w-7/12 lg:w-auto">
                     <h2 className="text-white text-xl self-center mb-8 font-medium">Current Employees</h2>
-                    <table id="employee-table" className="display"></table>
+                    {/* <ReactDataTable label="Test"/> */}
+                    <ReactDataTable data={employees} />
                 </div>
             </div>
         </>

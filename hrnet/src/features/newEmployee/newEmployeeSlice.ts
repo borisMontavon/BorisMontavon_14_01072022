@@ -12,14 +12,8 @@ export interface NewEmployeeState {
         "street": string,
         "zipCode": string,
         "city": string,
-        "state": {
-            "label": string,
-            "value": string
-        },
-        "department": {
-            "label": string,
-            "value": string
-        }
+        "state": string,
+        "department": string
     }
 }
 
@@ -32,14 +26,8 @@ const initialState: NewEmployeeState = {
         "street": "",
         "zipCode": "",
         "city": "",
-        "state": {
-            "label": "",
-            "value": ""
-        },
-        "department": {
-            "label": "",
-            "value": ""
-        }
+        "state": "",
+        "department": ""
     }
 };
 
@@ -76,12 +64,12 @@ export const newEmployeeSlice = createSlice({
             isCityValid({"city": state.data.city});
         },
         setState: (state, action: PayloadAction<object>) => {
-            state.data.state = {...state.data.state, ...action.payload};
-            isStateValid({label: state.data.state.label, value: state.data.state.value});
+            state.data = {...state.data, ...action.payload};
+            isStateValid({"state": state.data.state});
         },
         setDepartment: (state, action: PayloadAction<object>) => {
-            state.data.department = {...state.data.department, ...action.payload};
-            isDepartmentValid({label: state.data.department.label, value: state.data.department.value});
+            state.data = {...state.data, ...action.payload};
+            isDepartmentValid({"department": state.data.department});
         },
         setModalData: (state, action: PayloadAction<object>) => {
             state.data = {...state.data, ...action.payload};
