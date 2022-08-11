@@ -140,14 +140,8 @@ export function HomePage() {
             "street": street,
             "zipCode": zipCode,
             "city": city,
-            "state": {
-                "label": state.label,
-                "value": state.value
-            },
-            "department": {
-                "label": department.label,
-                "value": department.value
-            }
+            "state": state,
+            "department": department
         };
     }
 

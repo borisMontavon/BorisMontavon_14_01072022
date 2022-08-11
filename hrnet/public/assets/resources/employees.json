@@ -8,14 +8,8 @@
             "street": "22 Black Pearl Street",
             "zipCode": "5",
             "city": "Tortuga",
-            "state": {
-                "label": "Alaska",
-                "value": "AK"
-            },
-            "department": {
-                "label": "Legal",
-                "value": "LD"
-            }
+            "state": "Alaska",
+            "department": "Legal"
         },
         {
             "firstName": "William",
@@ -25,14 +19,8 @@
             "street": "15 Brown Forge Avenue",
             "zipCode": "4",
             "city": "Port Royal",
-            "state": {
-                "label": "Oregon",
-                "value": "OR"
-            },
-            "department": {
-                "label": "Engineering",
-                "value": "RD"
-            }
+            "state": "Oregon",
+            "department": "Engineering"
         },
         {
             "firstName": "Elizabeth",
@@ -42,14 +30,8 @@
             "street": "86 Breathing corner",
             "zipCode": "3",
             "city": "Port Royal",
-            "state": {
-                "label": "Wyoming",
-                "value": "WY"
-            },
-            "department": {
-                "label": "Human Resources",
-                "value": "HR"
-            }
+            "state": "Wyoming",
+            "department": "Human Resources"
         },
         {
             "firstName": "Hector",
@@ -59,14 +41,8 @@
             "street": "1 Isle de la Muerta",
             "zipCode": "2",
             "city": "Isle de la Muerta",
-            "state": {
-                "label": "Washington",
-                "value": "WA"
-            },
-            "department": {
-                "label": "Sales",
-                "value": "SD"
-            }
+            "state": "Washington",
+            "department": "Sales"
         },
         {
             "firstName": "Davy",
@@ -76,14 +52,8 @@
             "street": "Flying Dutchman",
             "zipCode": "1",
             "city": "Ocean",
-            "state": {
-                "label": "Palau",
-                "value": "PW"
-            },
-            "department": {
-                "label": "Human Resources",
-                "value": "HR"
-            }
+            "state": "Palau",
+            "department": "Human Resources"
         }
     ]
 }

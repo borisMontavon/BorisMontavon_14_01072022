@@ -126,11 +126,11 @@ export const isCityValid = ({city}: {"city": string}) => {
     return true;
 };
 
-// Validating city input
-export const isStateValid = (state: {"label": string, "value": string}) => {
+// Validating state input
+export const isStateValid = ({state}: {"state": string}) => {
     const stateSpan = document.getElementById("stateSpan");
 
-    if (!state.label) {
+    if (!state) {
         stateSpan?.classList.add("block");
         stateSpan?.classList.remove("hidden");
 
@@ -143,11 +143,11 @@ export const isStateValid = (state: {"label": string, "value": string}) => {
     return true;
 };
 
-// Validating city input
-export const isDepartmentValid = (department: {"label": string, "value": string}) => {
+// Validating department input
+export const isDepartmentValid = ({department}: {"department": string}) => {
     const departmentSpan = document.getElementById("departmentSpan");
 
-    if (!department.label) {
+    if (!department) {
         departmentSpan?.classList.add("block");
         departmentSpan?.classList.remove("hidden");
 
@@ -168,14 +168,8 @@ export const isFormValidCheck = (data: {
     "street": string,
     "zipCode": string,
     "city": string,
-    "state": {
-        "label": string,
-        "value": string
-    },
-    "department": {
-        "label": string,
-        "value": string
-    }
+    "state": string,
+    "department": string
 }) => {
     let isFormValid = true;
 
@@ -200,10 +194,10 @@ export const isFormValidCheck = (data: {
     if (!isCityValid({"city": data.city})) {
         isFormValid = false;
     }
-    if (!isStateValid(data.state)) {
+    if (!isStateValid({"state": data.state})) {
         isFormValid = false;
     }
-    if (!isDepartmentValid(data.department)) {
+    if (!isDepartmentValid({"department": data.department})) {
         isFormValid = false;
     }
 
