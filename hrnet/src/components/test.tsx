@@ -13,9 +13,18 @@ interface ReactDataTableProps {
 export function ReactDataTable({data}:ReactDataTableProps) {
     const [sortedData, setSortedData] = useState<Array<any>>([]);
     const [columns, setColumns] = useState<Array<any>>([]);
+    const [maxRows, setMaxRows] = useState(10);
+    const [isSearched, setIsSearched] = useState(false);
 
     useEffect(() => {
-        setSortedData(data.data);
+        const initData = data.data.map((item) => {
+            return {
+                ...item,
+                "show": true
+            };
+        });
+
+        setSortedData(initData);
 
         const initColumns = data.columns.map((column) => {
             return {
@@ -77,6 +86,32 @@ export function ReactDataTable({data}:ReactDataTableProps) {
         setSortedData(newlySortedData);
     };
 
+    const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const searchString = e.target.value;
+
+        if (searchString === "") {
+            sortedData.forEach((item) => {
+                item.show = true;
+            });
+            setIsSearched(false);
+        } else {
+            sortedData.forEach((item) => {
+                item.show = columns.some((column) => item[column.key].toLowerCase().includes(searchString.toLowerCase()));
+            });
+            setIsSearched(true);
+        }
+
+        const newlySortedData = [...sortedData];
+
+        setSortedData(newlySortedData);
+    };
+
+    const handleEntries = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        setMaxRows(Number(e.target.value));
+    };
+
+    const nbEntries = sortedData.filter((item) => item.show).length;
+
     const customTH = columns.map((item, index) => {
         return <th key={index} className="p-3 border border-neutral-800 border-collapse cursor-pointer" onClick={(e) => sortByColumn(e, item)}>
             {item.title}
@@ -84,22 +119,79 @@ export function ReactDataTable({data}:ReactDataTableProps) {
         </th>;
     });
 
+    let nbRows = 0;
+
     const rows = sortedData.map((item, index) => {
-        return <CustomTR key={index} item={item} columns={data.columns} />;
+        if (item.show && nbRows < maxRows) {
+            nbRows++;
+
+            return <CustomTR key={index} item={item} columns={data.columns} />;
+        }
+
+        return null;
     });
+
+    const entriesSummary = isSearched ?
+        <span className="text-white">Showing 1 to {nbRows} of {nbEntries} entries (filtered from {sortedData.length} total entries)</span> :
+        <span className="text-white">Showing 1 to {nbRows} of {nbEntries} entries</span>;
 
     return (
         <div>
-            <table className="border border-neutral-800 text-white">
-                <thead>
-                    <tr>
-                        {customTH}
-                    </tr>
-                </thead>
-                <tbody>
-                    {rows}
-                </tbody>
-            </table>
+            <div className="flex justify-between items-center mb-3">
+                <div>
+                    <span
+                        className="text-white"
+                    >
+                        Show
+                    </span>
+                    <select
+                        id="inputTableSearch"
+                        className="mx-2 p-1 rounded outline-none outline-offset-1 focus-visible:outline-teal-700"
+                        onChange={(e) => handleEntries(e)}
+                    >
+                        <option value={10}>10</option>
+                        <option value={25}>25</option>
+                        <option value={50}>50</option>
+                        <option value={100}>100</option>
+                    </select>
+                    <span
+                        className="text-white"
+                    >
+                        entries
+                    </span>
+                </div>
+                <div>
+                    <label
+                        htmlFor="inputTableSearch"
+                        className="text-white"
+                    >
+                        Search :
+                    </label>
+                    <input
+                        id="inputTableSearch"
+                        type="text"
+                        className="ml-3 p-1 rounded outline-none outline-offset-1 focus-visible:outline-teal-700"
+                        onChange={(e) => handleSearch(e)}
+                    />
+                </div>
+            </div>
+            <div>
+                <table className="border border-neutral-800 text-white">
+                    <thead>
+                        <tr>
+                            {customTH}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {rows}
+                    </tbody>
+                </table>
+            </div>
+            <div className="flex justify-between items-center mt-3">
+                <div>
+                    {entriesSummary}
+                </div>
+            </div>
         </div>
     );
 }
