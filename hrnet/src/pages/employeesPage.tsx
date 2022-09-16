@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { employeesDataFetchHelper } from "../helpers/dataFetchHelper";
-import { ReactDataTable } from "../components/test";
+import { ReactDataTable } from "../components/reactDataTable";
 
 interface TableData {
     data: Array<any>;
@@ -17,7 +17,7 @@ export function EmployeesPage() {
             const optionsData = await employeesDataFetchHelper();
 
             setEmployees({
-                "data": optionsData.employees,
+                "data": [...optionsData.employees, ...optionsData.employees, ...optionsData.employees, ...optionsData.employees, ...optionsData.employees, ...optionsData.employees, ...optionsData.employees, ...optionsData.employees, ...optionsData.employees, ...optionsData.employees, ...optionsData.employees, ...optionsData.employees, ...optionsData.employees, ...optionsData.employees, ...optionsData.employees, ...optionsData.employees, ...optionsData.employees, ...optionsData.employees, ...optionsData.employees, ...optionsData.employees, ...optionsData.employees, ...optionsData.employees, ...optionsData.employees, ...optionsData.employees, ...optionsData.employees, ...optionsData.employees, ...optionsData.employees, ...optionsData.employees, ...optionsData.employees, ...optionsData.employees, ...optionsData.employees, ...optionsData.employees, ...optionsData.employees, ...optionsData.employees, ...optionsData.employees, ...optionsData.employees],
                 "columns": [
                     { title: 'First Name', key: 'firstName' },
                     { title: 'Last Name', key: 'lastName' },
@@ -35,23 +35,6 @@ export function EmployeesPage() {
         fetchOptions();
     }, []);
 
-    // function getEmployees() {
-    //     $('#employee-table').DataTable({
-    //         data: employees,
-    //         columns: [
-    //             { title: 'First Name', key: 'firstName', sort: 'none' },
-    //             { title: 'Last Name', key: 'lastName', asc: 'asc },
-    //             { title: 'Start Date', key: 'serializedStartDate, asc: 'desc' },
-    //             { title: 'Department', key: 'department' },
-    //             { title: 'Date of Birth', key: 'serializedBirthDate' },
-    //             { title: 'Street', key: 'street' },
-    //             { title: 'City', key: 'city' },
-    //             { title: 'State', key: 'state' },
-    //             { title: 'Zip Code', key: 'zipCode' },
-    //         ]
-    //     });
-    // };
-
     return (
         <>
             <div className="w-100 flex flex-col items-center">
@@ -64,7 +47,6 @@ export function EmployeesPage() {
                 </Link>
                 <div className="bg-neutral-900 rounded-lg mb-8 p-8 flex flex-col w-11/12 md:w-7/12 lg:w-auto">
                     <h2 className="text-white text-xl self-center mb-8 font-medium">Current Employees</h2>
-                    {/* <ReactDataTable label="Test"/> */}
                     <ReactDataTable data={employees} />
                 </div>
             </div>
