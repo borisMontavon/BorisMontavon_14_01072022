@@ -1,8 +1,7 @@
-// import { ReactDataTable } from "@borisMontavon/react-data-table";
+import { ReactDataTable } from "@borisMontavon/react-data-table";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { employeesDataFetchHelper } from "../helpers/dataFetchHelper";
-import { ReactDataTable } from "../components/reactDataTable";
 
 interface TableData {
     data: Array<any>;
@@ -35,6 +34,14 @@ export function EmployeesPage() {
         fetchOptions();
     }, []);
 
+    let employeesCreated;
+
+    if (employees.data.length) {
+        employeesCreated = <ReactDataTable data={employees} />;
+    } else {
+        employeesCreated = <span>No employees created yet.</span>;
+    }
+
     return (
         <>
             <div className="w-100 flex flex-col items-center">
@@ -47,7 +54,7 @@ export function EmployeesPage() {
                 </Link>
                 <div className="bg-neutral-900 rounded-lg mb-8 p-8 flex flex-col w-11/12 md:w-7/12 lg:w-auto">
                     <h2 className="text-white text-xl self-center mb-8 font-medium">Current Employees</h2>
-                    <ReactDataTable data={employees} />
+                    {employeesCreated}
                 </div>
             </div>
         </>
