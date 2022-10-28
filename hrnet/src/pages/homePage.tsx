@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 
 import { CustomInput } from "../components/customInput";
@@ -12,44 +12,30 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { CustomModal } from "../components/customModal";
 import {
-    selectSerializedBirthDate,
-    selectCity,
-    selectDepartment,
-    selectFirstName,
-    selectLastName,
-    selectModalData,
-    selectSerializedStartDate,
-    selectState,
-    selectStreet,
-    selectZipCode,
     setSerializedBirthDate,
     setCity,
     setDepartment,
     setFirstName,
     setLastName,
-    setModalData,
+    setSaveNewEmployee,
     setSerializedStartDate,
     setState,
     setStreet,
-    setZipCode
+    setZipCode,
+    SelectInterface,
+    selectNewEmployee,
 } from "../features/newEmployee/newEmployeeSlice";
 
 export function HomePage() {
+    const selectStateInputRef = useRef<any>();
+    const selectDepartmentInputRef = useRef<any>();
+
     const [options, setOptions] = useState({"states": [], "departments": []});
     const [isModalDisplayed, setIsModalDisplayed] = useState(false);
     const [birthDate, setBirthDate] = useState(new Date());
     const [startDate, setStartDate] = useState(new Date());
 
-    const firstName = useAppSelector(selectFirstName);
-    const lastName = useAppSelector(selectLastName);
-    const serializedBirthDate = useAppSelector(selectSerializedBirthDate);
-    const serializedStartDate = useAppSelector(selectSerializedStartDate);
-    const street = useAppSelector(selectStreet);
-    const zipCode = useAppSelector(selectZipCode);
-    const city = useAppSelector(selectCity);
-    const state = useAppSelector(selectState);
-    const department = useAppSelector(selectDepartment);
-    const modalData = useAppSelector(selectModalData);
+    const newEmployee = useAppSelector(selectNewEmployee);
 
     const dispatch = useAppDispatch();
 
@@ -113,6 +99,13 @@ export function HomePage() {
         dispatch(setSerializedStartDate(date.toLocaleDateString("en-US")));
     }
 
+    function onValueSelected(inputValue: any): SelectInterface {
+        return {
+            label: inputValue.label,
+            value: inputValue.value
+        }
+    }
+
     function onFormValidate(e: React.SyntheticEvent): void {
         e.preventDefault();
         e.stopPropagation();
@@ -120,28 +113,36 @@ export function HomePage() {
         const newData = getNewEmployeeData();
         const isFormValid: boolean = isFormValidCheck(newData);
 
-        dispatch(setModalData({...modalData, ...newData}));
-
         if (isFormValid) {
+            dispatch(setSaveNewEmployee({...newEmployee, ...newData}));
             setIsModalDisplayed(true);
         }
     }
 
     function closeModal() {
+        // Closing the modal
         setIsModalDisplayed(false);
+        // Resetting the form inputs
+        (document.getElementById("create-employee") as HTMLFormElement).reset();
+        // Resetting the datepickers components
+        setBirthDate(new Date());
+        setStartDate(new Date());
+        // Resetting the ReactSelect components
+        selectStateInputRef.current.setValue({"label": "", "value": ""});
+        selectDepartmentInputRef.current.setValue({"label": "", "value": ""});
     }
 
     function getNewEmployeeData() {
         return {
-            "firstName": firstName,
-            "lastName": lastName,
-            "serializedBirthDate": serializedBirthDate,
-            "serializedStartDate": serializedStartDate,
-            "street": street,
-            "zipCode": zipCode,
-            "city": city,
-            "state": state,
-            "department": department
+            "firstName": newEmployee.firstName,
+            "lastName": newEmployee.lastName,
+            "serializedBirthDate": newEmployee.serializedBirthDate,
+            "serializedStartDate": newEmployee.serializedStartDate,
+            "street": newEmployee.street,
+            "zipCode": newEmployee.zipCode,
+            "city": newEmployee.city,
+            "state": newEmployee.state,
+            "department": newEmployee.department
         };
     }
 
@@ -154,7 +155,7 @@ export function HomePage() {
                 <form onSubmit={onFormValidate} id="create-employee">
                     <CustomInput
                         inputId="first-name"
-                        inputPattern="^[a-zA-Z]+$"
+                        inputPattern="^[ a-zA-ZÀ-ÿ\u00f1\u00d1]*$"
                         min=""
                         labelTitle="First Name"
                         type="text"
@@ -164,7 +165,7 @@ export function HomePage() {
                     />
                     <CustomInput
                         inputId="last-name"
-                        inputPattern="^[a-zA-Z]+$"
+                        inputPattern="^[ a-zA-ZÀ-ÿ\u00f1\u00d1]*$"
                         min=""
                         labelTitle="Last Name"
                         type="text"
@@ -208,7 +209,7 @@ export function HomePage() {
                     </div>
                     <CustomInput
                         inputId="street"
-                        inputPattern="^[a-zA-Z]+$"
+                        inputPattern="^[ 0-9a-zA-ZÀ-ÿ\u00f1\u00d1]*$"
                         min=""
                         labelTitle="Street"
                         type="text"
@@ -228,7 +229,7 @@ export function HomePage() {
                     />
                     <CustomInput
                         inputId="city"
-                        inputPattern="^[a-zA-Z]+$"
+                        inputPattern="^[ a-zA-ZÀ-ÿ\u00f1\u00d1]*$"
                         min=""
                         labelTitle="City"
                         type="text"
@@ -240,11 +241,12 @@ export function HomePage() {
                     <div>
                         <label htmlFor="state" className="text-white block mt-4 mb-2">State</label>
                         <ReactSelect
+                            ref={selectStateInputRef}
                             styles={customStyles}
                             id="state"
                             options={options.states}
                             menuPlacement="auto"
-                            onChange={(inputValue) => dispatch(setState(inputValue || {}))}
+                            onChange={(inputValue) => dispatch(setState(onValueSelected(inputValue)))}
                         />
                         <span
                             id="stateSpan"
@@ -256,11 +258,12 @@ export function HomePage() {
                     <div>
                         <label htmlFor="department" className="text-white block mt-4 mb-2">Department</label>
                         <ReactSelect
+                            ref={selectDepartmentInputRef}
                             styles={customStyles}
                             id="department"
                             options={options.departments}
                             menuPlacement="auto"
-                            onChange={(inputValue) => dispatch(setDepartment(inputValue || {}))}
+                            onChange={(inputValue) => dispatch(setDepartment(onValueSelected(inputValue)))}
                         />
                         <span
                             id="departmentSpan"
@@ -277,7 +280,7 @@ export function HomePage() {
                     </button>
                 </form>
             </div>
-            <CustomModal show={isModalDisplayed} title={"Employee created !"} employeeData={modalData.data} onClose={() => closeModal()} />
+            <CustomModal show={isModalDisplayed} title={"Employee created !"} employeeData={newEmployee} onClose={() => closeModal()} />
         </div>
     );
 }

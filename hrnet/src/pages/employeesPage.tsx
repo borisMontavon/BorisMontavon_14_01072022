@@ -1,38 +1,21 @@
 import { ReactDataTable } from "@borisMontavon/react-data-table";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
-import { employeesDataFetchHelper } from "../helpers/dataFetchHelper";
-
-interface TableData {
-    data: Array<any>;
-    columns: Array<any>;
-}
+import { useAppDispatch, useAppSelector } from "../app/hooks";
+import { fetchEmployeesAsync, selectEmployees } from "../features/employees/employeesSlice";
 
 export function EmployeesPage() {
-    const [employees, setEmployees] = useState<TableData>({"data": [], "columns": []});
+    const employees = useAppSelector(selectEmployees);
+    const dispatch = useAppDispatch();
 
     useEffect(() => {
-        async function fetchOptions() {
-            const optionsData = await employeesDataFetchHelper();
-
-            setEmployees({
-                "data": [...optionsData.employees, ...optionsData.employees, ...optionsData.employees, ...optionsData.employees, ...optionsData.employees, ...optionsData.employees, ...optionsData.employees, ...optionsData.employees, ...optionsData.employees, ...optionsData.employees, ...optionsData.employees, ...optionsData.employees, ...optionsData.employees, ...optionsData.employees, ...optionsData.employees, ...optionsData.employees, ...optionsData.employees, ...optionsData.employees, ...optionsData.employees, ...optionsData.employees, ...optionsData.employees, ...optionsData.employees, ...optionsData.employees, ...optionsData.employees, ...optionsData.employees, ...optionsData.employees, ...optionsData.employees, ...optionsData.employees, ...optionsData.employees, ...optionsData.employees, ...optionsData.employees, ...optionsData.employees, ...optionsData.employees, ...optionsData.employees, ...optionsData.employees, ...optionsData.employees],
-                "columns": [
-                    { title: 'First Name', key: 'firstName' },
-                    { title: 'Last Name', key: 'lastName' },
-                    { title: 'Start Date', key: 'serializedStartDate' },
-                    { title: 'Department', key: 'department' },
-                    { title: 'Date of Birth', key: 'serializedBirthDate' },
-                    { title: 'Street', key: 'street' },
-                    { title: 'City', key: 'city' },
-                    { title: 'State', key: 'state' },
-                    { title: 'Zip Code', key: 'zipCode' }
-                ]
-            });
+        async function fetchEmployees() {
+            dispatch(fetchEmployeesAsync());
         }
 
-        fetchOptions();
-    }, []);
+        fetchEmployees();
+
+    }, [dispatch]);
 
     let employeesCreated;
 
