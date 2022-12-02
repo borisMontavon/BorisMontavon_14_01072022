@@ -1,93 +1,137 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '../../app/store';
 import { isBirthDateValid, isCityValid, isDepartmentValid, isFirstNameValid, isLastNameValid, isStartDateValid, isStateValid, isStreetValid, isZipCodeValid } from '../../helpers/newEmployeeFormValidation';
+import { newEmployeePost } from '../../services/newEmployeePost';
 
 
-export interface NewEmployeeState {
-    data: {
-        "firstName": string,
-        "lastName": string,
-        "serializedBirthDate": string,
-        "serializedStartDate": string,
-        "street": string,
-        "zipCode": string,
-        "city": string,
-        "state": string,
-        "department": string
-    }
+interface NewEmployeeState {
+    "firstName": string,
+    "lastName": string,
+    "serializedBirthDate": string,
+    "serializedStartDate": string,
+    "street": string,
+    "zipCode": string,
+    "city": string,
+    "state": string,
+    "department": string,
+    "error": string,
+    "displayModal": boolean
+}
+
+export interface SelectInterface {
+    label: string;
+    value: string;
 }
 
 const initialState: NewEmployeeState = {
-    data: {
-        "firstName": "",
-        "lastName": "",
-        "serializedBirthDate": new Date().toLocaleDateString("en-US"),
-        "serializedStartDate": new Date().toLocaleDateString("en-US"),
-        "street": "",
-        "zipCode": "",
-        "city": "",
-        "state": "",
-        "department": ""
-    }
+    "firstName": "",
+    "lastName": "",
+    "serializedBirthDate": new Date().toLocaleDateString("en-US"),
+    "serializedStartDate": new Date().toLocaleDateString("en-US"),
+    "street": "",
+    "zipCode": "",
+    "city": "",
+    "state": "",
+    "department": "",
+    "error": "",
+    "displayModal": false
 };
+
+export const createNewEmployeeAsync = createAsyncThunk(
+    'createNewEmployee',
+    async (
+        {
+            firstName, lastName, serializedBirthDate, serializedStartDate, street, zipCode, city, state, department
+        }:
+        {
+            firstName: string,
+            lastName: string,
+            serializedBirthDate: string,
+            serializedStartDate: string,
+            street: string,
+            zipCode: string
+            city: string,
+            state:string,
+            department: string
+        }) => {
+            const response = await newEmployeePost({firstName, lastName, serializedBirthDate, serializedStartDate, street, zipCode, city, state, department});
+            
+            return response;
+    }
+)
 
 export const newEmployeeSlice = createSlice({
     name: 'newEmployee',
     initialState,
     reducers: {
         setFirstName: (state, action: PayloadAction<string>) => {
-            state.data = {...state.data, "firstName": action.payload};
-            isFirstNameValid({"firstName": state.data.firstName});
+            state = {...state, "firstName": action.payload};
+            isFirstNameValid({"firstName": state.firstName});
+            return state;
         },
         setLastName: (state, action: PayloadAction<string>) => {
-            state.data = {...state.data, "lastName": action.payload};
-            isLastNameValid({"lastName": state.data.lastName});
+            state = {...state, "lastName": action.payload};
+            isLastNameValid({"lastName": state.lastName});
+            return state;
         },
         setSerializedBirthDate: (state, action: PayloadAction<string>) => {
-            state.data = {...state.data, "serializedBirthDate": action.payload};
-            isBirthDateValid({"serializedBirthDate": state.data.serializedBirthDate});
+            state = {...state, "serializedBirthDate": action.payload};
+            isBirthDateValid({"serializedBirthDate": state.serializedBirthDate});
+            return state;
         },
         setSerializedStartDate: (state, action: PayloadAction<string>) => {
-            state.data = {...state.data, "serializedStartDate": action.payload};
-            isStartDateValid({"serializedStartDate": state.data.serializedStartDate});
+            state = {...state, "serializedStartDate": action.payload};
+            isStartDateValid({"serializedStartDate": state.serializedStartDate});
+            return state;
         },
         setStreet: (state, action: PayloadAction<string>) => {
-            state.data = {...state.data, "street": action.payload};
-            isStreetValid({"street": state.data.street});
+            state = {...state, "street": action.payload};
+            isStreetValid({"street": state.street});
+            return state;
         },
         setZipCode: (state, action: PayloadAction<string>) => {
-            state.data = {...state.data, "zipCode": action.payload};
-            isZipCodeValid({"zipCode": state.data.zipCode});
+            state = {...state, "zipCode": action.payload};
+            isZipCodeValid({"zipCode": state.zipCode});
+            return state;
         },
         setCity: (state, action: PayloadAction<string>) => {
-            state.data = {...state.data, "city": action.payload};
-            isCityValid({"city": state.data.city});
+            state = {...state, "city": action.payload};
+            isCityValid({"city": state.city});
+            return state;
         },
-        setState: (state, action: PayloadAction<object>) => {
-            state.data = {...state.data, ...action.payload};
-            isStateValid({"state": state.data.state});
+        setState: (state, action: PayloadAction<{"label": string, "value": string}>) => {
+            state = {...state, "state": action.payload.label};
+            isStateValid({"state": state.state});
+            return state;
         },
-        setDepartment: (state, action: PayloadAction<object>) => {
-            state.data = {...state.data, ...action.payload};
-            isDepartmentValid({"department": state.data.department});
+        setDepartment: (state, action: PayloadAction<{"label": string, "value": string}>) => {
+            state = {...state, "department": action.payload.label};
+            isDepartmentValid({"department": state.department});
+            return state;
         },
-        setModalData: (state, action: PayloadAction<object>) => {
-            state.data = {...state.data, ...action.payload};
+        setdisplayModal: (state, action: PayloadAction<boolean>) => {
+            state = {...state, "displayModal": action.payload};
+            return state;
         }
+    },
+    extraReducers: (builder) => {
+        builder
+        .addCase(createNewEmployeeAsync.fulfilled, (state, action) => {
+            switch (action.payload.status) {
+                case 201:
+                    state.displayModal = true;
+                    return state;
+                default:
+                    state.error = "Something went wrong ..";
+                    state.displayModal = false;
+                    return state;
+            }
+        });
     }
 });
 
-export const { setFirstName, setLastName, setSerializedBirthDate, setSerializedStartDate, setStreet, setZipCode, setCity, setState, setDepartment, setModalData } = newEmployeeSlice.actions;
+export const { setFirstName, setLastName, setSerializedBirthDate, setSerializedStartDate, setStreet, setZipCode, setCity, setState, setDepartment, setdisplayModal } = newEmployeeSlice.actions;
 
-export const selectFirstName = (state: RootState) => state.newEmployee.data.firstName;
-export const selectLastName = (state: RootState) => state.newEmployee.data.lastName;
-export const selectSerializedBirthDate = (state: RootState) => state.newEmployee.data.serializedBirthDate;
-export const selectSerializedStartDate = (state: RootState) => state.newEmployee.data.serializedStartDate;
-export const selectStreet = (state: RootState) => state.newEmployee.data.street;
-export const selectZipCode = (state: RootState) => state.newEmployee.data.zipCode;
-export const selectCity = (state: RootState) => state.newEmployee.data.city;
-export const selectState = (state: RootState) => state.newEmployee.data.state;
-export const selectDepartment = (state: RootState) => state.newEmployee.data.department;
-export const selectModalData = (state: RootState) => state.newEmployee;
+export const selectNewEmployee = (state: RootState) => state.newEmployee;
 
 export default newEmployeeSlice.reducer;

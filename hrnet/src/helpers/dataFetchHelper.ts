@@ -16,22 +16,3 @@ export async function optionsFetchHelper() {
         console.error(error);
     }
 }
-
-export async function employeesDataFetchHelper() {
-    try {
-        let response = await fetch(
-            "assets/resources/employees.json",
-            {
-                headers: 
-                {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                }
-            }
-        );
-        
-        return response.json();
-    } catch (error) {
-        console.error(error);
-    }
-}
