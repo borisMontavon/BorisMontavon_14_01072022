@@ -1,3 +1,16 @@
+# Run this repo and the associated API
+
+## First : launch the API
+
+You have to clone the API, found at this [link](https://github.com/borisMontavon/node-express-api-projet-14).\
+Then, you can follow the pretty simple README file you will find in this repository (only one script to run to make the API listening).
+
+## Second : prepare this repository for launch
+
+Once this repository is cloned onto your computer, open it and run the `npm ci` script.\
+This will install all the `node_modules` you will need to have a working project.\
+Eventually, run the `npm start` script to open the project in your main browser.
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app), using the [Redux](https://redux.js.org/) and [Redux Toolkit](https://redux-toolkit.js.org/) TS template.
