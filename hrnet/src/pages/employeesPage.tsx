@@ -22,7 +22,7 @@ export function EmployeesPage() {
     if (employees.data.length) {
         employeesCreated = <ReactDataTable data={employees} />;
     } else {
-        employeesCreated = <span>No employees created yet.</span>;
+        employeesCreated = <span className="text-white">No employees created yet.</span>;
     }
 
     return (

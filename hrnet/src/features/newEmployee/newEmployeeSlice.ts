@@ -1,8 +1,7 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '../../app/store';
-import { addDoc, collection } from "firebase/firestore";
-import database from "../../firebase";
 import { isBirthDateValid, isCityValid, isDepartmentValid, isFirstNameValid, isLastNameValid, isStartDateValid, isStateValid, isStreetValid, isZipCodeValid } from '../../helpers/newEmployeeFormValidation';
+import { newEmployeePost } from '../../services/newEmployeePost';
 
 
 interface NewEmployeeState {
@@ -14,7 +13,9 @@ interface NewEmployeeState {
     "zipCode": string,
     "city": string,
     "state": string,
-    "department": string
+    "department": string,
+    "error": string,
+    "displayModal": boolean
 }
 
 export interface SelectInterface {
@@ -31,8 +32,33 @@ const initialState: NewEmployeeState = {
     "zipCode": "",
     "city": "",
     "state": "",
-    "department": ""
+    "department": "",
+    "error": "",
+    "displayModal": false
 };
+
+export const createNewEmployeeAsync = createAsyncThunk(
+    'createNewEmployee',
+    async (
+        {
+            firstName, lastName, serializedBirthDate, serializedStartDate, street, zipCode, city, state, department
+        }:
+        {
+            firstName: string,
+            lastName: string,
+            serializedBirthDate: string,
+            serializedStartDate: string,
+            street: string,
+            zipCode: string
+            city: string,
+            state:string,
+            department: string
+        }) => {
+            const response = await newEmployeePost({firstName, lastName, serializedBirthDate, serializedStartDate, street, zipCode, city, state, department});
+            
+            return response;
+    }
+)
 
 export const newEmployeeSlice = createSlice({
     name: 'newEmployee',
@@ -83,13 +109,28 @@ export const newEmployeeSlice = createSlice({
             isDepartmentValid({"department": state.department});
             return state;
         },
-        setSaveNewEmployee: (_state, action: PayloadAction<object>) => {
-            addDoc(collection(database, "employees"), action.payload);
+        setdisplayModal: (state, action: PayloadAction<boolean>) => {
+            state = {...state, "displayModal": action.payload};
+            return state;
         }
+    },
+    extraReducers: (builder) => {
+        builder
+        .addCase(createNewEmployeeAsync.fulfilled, (state, action) => {
+            switch (action.payload.status) {
+                case 201:
+                    state.displayModal = true;
+                    return state;
+                default:
+                    state.error = "Something went wrong ..";
+                    state.displayModal = false;
+                    return state;
+            }
+        });
     }
 });
 
-export const { setFirstName, setLastName, setSerializedBirthDate, setSerializedStartDate, setStreet, setZipCode, setCity, setState, setDepartment, setSaveNewEmployee } = newEmployeeSlice.actions;
+export const { setFirstName, setLastName, setSerializedBirthDate, setSerializedStartDate, setStreet, setZipCode, setCity, setState, setDepartment, setdisplayModal } = newEmployeeSlice.actions;
 
 export const selectNewEmployee = (state: RootState) => state.newEmployee;
 

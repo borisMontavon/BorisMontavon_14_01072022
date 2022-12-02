@@ -1,10 +1,9 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { collection, onSnapshot } from "firebase/firestore";
 import { RootState } from '../../app/store';
-import database from "../../firebase";
+import { employeesGet } from '../../services/employeesGet';
 
 interface EmployeesState {
-    "data": Array<any>,
+    "data": any,
     "columns": Array<any>
 }
 
@@ -25,16 +24,10 @@ const initialState: EmployeesState = {
 
 export const fetchEmployeesAsync = createAsyncThunk(
     'fetchEmployees',
-    () => {
-        return new Promise<any>((resolve) => {
-            let data: Array<any> = [];
-    
-            onSnapshot(collection(database, "employees"), (snapshot) => {
-                data = snapshot.docs.map((doc) => doc.data());
+    async () => {
+        const response = await employeesGet();
 
-                resolve(data);
-            });
-        });
+        return response;
     }
 )
 
@@ -44,8 +37,14 @@ export const employeesSlice = createSlice({
     reducers: {},
     extraReducers: (builder) => {
         builder
-        .addCase(fetchEmployeesAsync.fulfilled, (state, action) => {
-            return state = {...state, "data": action.payload};
+        .addCase(fetchEmployeesAsync.fulfilled, (state, action: any) => {
+            switch (action.payload.status) {
+                case 200:
+                    console.log(action);
+                    return state = {...state, "data": action.payload.employees};
+                default:
+                    return state;
+            }
         });
     }
 });

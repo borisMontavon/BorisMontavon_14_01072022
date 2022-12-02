@@ -17,13 +17,14 @@ import {
     setDepartment,
     setFirstName,
     setLastName,
-    setSaveNewEmployee,
     setSerializedStartDate,
     setState,
     setStreet,
     setZipCode,
+    setdisplayModal,
     SelectInterface,
     selectNewEmployee,
+    createNewEmployeeAsync
 } from "../features/newEmployee/newEmployeeSlice";
 
 export function HomePage() {
@@ -31,7 +32,6 @@ export function HomePage() {
     const selectDepartmentInputRef = useRef<any>();
 
     const [options, setOptions] = useState({"states": [], "departments": []});
-    const [isModalDisplayed, setIsModalDisplayed] = useState(false);
     const [birthDate, setBirthDate] = useState(new Date());
     const [startDate, setStartDate] = useState(new Date());
 
@@ -114,14 +114,13 @@ export function HomePage() {
         const isFormValid: boolean = isFormValidCheck(newData);
 
         if (isFormValid) {
-            dispatch(setSaveNewEmployee({...newEmployee, ...newData}));
-            setIsModalDisplayed(true);
+            dispatch(createNewEmployeeAsync({...newEmployee, ...newData}));
         }
     }
 
     function closeModal() {
         // Closing the modal
-        setIsModalDisplayed(false);
+        dispatch(setdisplayModal(false));
         // Resetting the form inputs
         (document.getElementById("create-employee") as HTMLFormElement).reset();
         // Resetting the datepickers components
@@ -146,12 +145,17 @@ export function HomePage() {
         };
     }
 
+    const error = newEmployee.error.length ?
+        <span className="text-red-600">{newEmployee.error}</span> :
+        <></>;
+
     return (
         <div className="w-100 flex flex-col items-center">
             <h1 className="font-montserrat text-teal-700 text-6xl mt-8 mb-12">HRnet</h1>
             <Link to="/employees" className="bg-transparent py-2 px-4 rounded-md text-teal-700 border border-teal-700 transition-all mb-8 hover:bg-teal-700 hover:text-white">View Current Employees</Link>
             <div className="bg-neutral-900 rounded-lg mb-8 p-8 flex flex-col w-11/12 md:w-7/12 lg:w-5/12">
                 <h2 className="text-white text-xl self-center mb-8 font-medium">Create Employee</h2>
+                {error}
                 <form onSubmit={onFormValidate} id="create-employee">
                     <CustomInput
                         inputId="first-name"
@@ -280,7 +284,7 @@ export function HomePage() {
                     </button>
                 </form>
             </div>
-            <CustomModal show={isModalDisplayed} title={"Employee created !"} employeeData={newEmployee} onClose={() => closeModal()} />
+            <CustomModal show={newEmployee.displayModal} title={"Employee created !"} employeeData={newEmployee} onClose={() => closeModal()} />
         </div>
     );
 }
